@@ -1,0 +1,12 @@
+#!/bin/bash
+
+#========================================================================
+# FILE NAME:    sample.param
+# FUNCTION:     Sample parameter file
+# VERSION:      1.0
+# AUTHOR:       S.Yatsuzuka
+#
+# Copyright (C) 2016 NASEBANAL
+#========================================================================
+
+export NB_CMD="python ${NB_HOME}/src/sample.py"
