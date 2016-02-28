@@ -15,4 +15,4 @@ export NB_FRAMERATE=32
 export NB_OUTPUT_IMG=${NB_HOME}/temp/test.jpg
 export NB_OUTPUT_MOVIE=${NB_HOME}/temp/test.h264
 export NB_STANDBY_TIME=1
-export NB_WAITING_TIME=10
+export NB_WAITING_TIME=5
