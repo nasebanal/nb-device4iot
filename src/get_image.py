@@ -17,26 +17,11 @@ __version__ = "1.0"
 #----- General -----
 
 import os
-#import os.path
-#import sys
-#import time
-#import math
-
-#----- Open CV -----
-
-import cv2
-import numpy as np
-
-#----- Pi Camera -----
-
-import picamera
-from picamera import PiCamera
-import picamera.array
-from picamera.array import PiRGBArray
 
 #----- NASEBANAL -----
 
 from common import Log
+from proc_image import ProcImage
 
 
 #======= Global Variable =======
@@ -44,63 +29,24 @@ from common import Log
 log = Log(os.environ.has_key('NB_LOG_LEVEL'))
 
 
-#======= GetImage Class =======
-
-class GetImage():
-
-    """
-    Class to get static images
-    """
-
-    #======= Get Image =======
-
-    def get_image(self):
-
-        pass
-
-
-    #======= Initialization =======
-
-    def __init__(self):
-
-        """
-        Constructor
-        """
-
-        #======= Start Message =======
-
-        log.output_msg(1, 1, "GetImage.__init__() started")
-
-
-        #======= Setup Resolution =======
-
-        if os.environ.has_key('NB_RESOLUTION'):
-            self.resolution = int(os.environ['NB_RESOLUTION'])
-        else:
-            self.resolution = 1
-
-        log.output_msg(1, 1, "self.resolution = {0}".format(self.resolution))
-
-
-        #======= End Message =======
-
-        log.output_msg(1, 1, "GetImage.__init__() ended")
-
-
 #======= Main Function =======
 
 if __name__ == '__main__':
 
+
     #======= Start Message =======
 
-    log.output_msg(1, 1, "get_image.main() started")
+    log.output_msg(1, 1, "main() started")
+    log.output_msg(1, 1, "log.log_level = {0}".format(log.log_level))
 
 
     #======= Start Process =======
 
-    app = GetImage()
+    app = ProcImage()
     app.get_image()
+
 
     #======= End Message =======
 
-    log.output_msg(1, 1, "get_image.main() ended")
+    log.output_msg(1, 1, "main() ended")
+

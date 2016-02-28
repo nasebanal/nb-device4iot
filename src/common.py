@@ -79,7 +79,3 @@ class Log():
         else:
             self.log_level = 10
 
-
-        #======= End Message =======
-
-        self.output_msg(1, 1, "Log.log_level = {0}".format(self.log_level))
