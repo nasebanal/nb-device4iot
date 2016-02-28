@@ -66,6 +66,11 @@ echo "CMD   = ${NB_CMD}"
 
 while [ 1 ]
 do
+
+    DATE=`date +%Y%m%d%H%M%S`
+    IMAGE_FILE=img_${DATE}.jpg
+    echo "IMAGE_FILE    = ${IMAGE_FILE}"
+
     if [ $# = 0 ]; then
 
         ${NB_CMD}
@@ -77,6 +82,14 @@ do
 
     #======= Transfer image files =======
 
-    scp -i ${NB_KEY_FILE} ${NB_OUTPUT_IMG} ${NB_REMOTE_USER}@${NB_REMOTE_HOST}:${NB_REMOTE_IMAGE_PATH}
+    if [ ${#NB_DEBUG} = 0 ]; then
+        scp -i ${NB_KEY_FILE} ${NB_OUTPUT_IMG} ${NB_REMOTE_USER}@${NB_REMOTE_HOST}:${NB_REMOTE_IMAGE_PATH}/waiting/${IMAGE_FILE}
+        scp -i ${NB_KEY_FILE} ${NB_OUTPUT_IMG} ${NB_REMOTE_USER}@${NB_REMOTE_HOST}:${NB_REMOTE_IMAGE_PATH}/
+    else
+        scp ${NB_OUTPUT_IMG} ${NB_DEBUG_USER}@${NB_DEBUG_HOST}:${NB_DEBUG_IMAGE_PATH}/waiting/${IMAGE_FILE}
+        scp ${NB_OUTPUT_IMG} ${NB_DEBUG_USER}@${NB_DEBUG_HOST}:${NB_DEBUG_IMAGE_PATH}/
+    fi
+
+    sleep ${NB_WAITING_TIME}
 
 done
