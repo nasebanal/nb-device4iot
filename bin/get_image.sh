@@ -12,10 +12,17 @@
 
 #======= Check Arguments =======
 
-if [ $# -gt 1 ]; then
+if [ $# -eq 0 -o $# -gt 2 ]; then
 
     echo
-    echo "Usage: $0 [Output File]"
+    echo "Usage: $0 <Mode> [Output File]"
+    echo
+    echo "  <Mode>"
+    echo "      0: loop"
+    echo "      other: one time"
+    echo
+    echo "  [Output File]"
+    echo "      log file name (optional)"
     echo
         exit 1
 fi
@@ -23,9 +30,11 @@ fi
 
 #======= Get Arguments =======
 
-if [ $# = 1 ]; then
+MODE=$1
 
-    OUTPUT_FILE=$1
+if [ $# -eq 2 ]; then
+
+    OUTPUT_FILE=$2
     echo "OUTPUT_FILE   = ${OUTPUT_FILE}"
 fi
 
@@ -53,6 +62,19 @@ exit 1
 fi
 
 
+#======= Check PID file =======
+
+PIDFILE=${NB_HOME}/temp/pid.txt
+
+if [ -e ${PIDFILE} ]; then
+
+    echo "INFO: pidfile exists"
+    exit 0
+fi
+
+echo $$ > ${PIDFILE}
+
+
 #======= Get Parameter =======
 
 source ${NB_HOME}/param/get_image.param
@@ -71,11 +93,11 @@ do
     IMAGE_FILE=img_${DATE}.jpg
     echo "IMAGE_FILE    = ${IMAGE_FILE}"
 
-    if [ $# = 0 ]; then
+    if [ $# = 1 ]; then
 
         ${NB_CMD}
 
-    elif [ $# = 1 ]; then
+    elif [ $# = 2 ]; then
 
         ${NB_CMD} > ${OUTPUT_FILE}
     fi
@@ -90,6 +112,16 @@ do
         scp ${NB_OUTPUT_IMG} ${NB_DEBUG_USER}@${NB_DEBUG_HOST}:${NB_DEBUG_IMAGE_PATH}/
     fi
 
+    if [ ${MODE} -ne "0" ]; then
+        echo
+        break
+    fi
+
     sleep ${NB_WAITING_TIME}
 
 done
+
+
+#======= Remove pid file =======
+
+rm ${PIDFILE}
