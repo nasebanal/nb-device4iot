@@ -39,6 +39,16 @@ from picamera.array import PiRGBArray
 from common import Log
 
 
+#======= Global Variable =======
+
+COLOR = {}
+COLOR[0] = (255, 255, 255)
+COLOR[1] = (255, 0, 0)
+COLOR[2] = (0, 255, 0)
+COLOR[3] = (0, 0, 255)
+COLOR[4] = (100, 100, 100)
+
+
 #======= ProcImage Class =======
 
 class ProcImage():
@@ -75,6 +85,41 @@ class ProcImage():
         elif self.procmode == 2:
 
             self.img_output = cv2.Canny(self.img_input, 50, 150)
+
+
+        #----- Face Recognition -----
+
+        elif self.procmode == 3:
+
+
+            #----- Copy Mat -----
+
+            self.img_output = self.img_input.copy()
+
+
+            #----- Get Face Object -----
+
+            faces = self.cascade_face.detectMultiScale(
+                self.img_output,
+                scaleFactor=1.1,
+                minNeighbors=3,
+                flags=cv2.CASCADE_SCALE_IMAGE,
+                minSize=(0,0)
+            )
+
+        #----- Depict Face region -----
+
+        for x, y, w, h in faces:
+
+            #----- Depict rectangle for each face -----
+
+            cv2.rectangle(
+                self.img_output,
+                (x-self.face_margin_x, y-self.face_margin_y),
+                (x+w+self.face_margin_x, y+h+self.face_margin_y),
+                COLOR[2],
+                self.rect_width
+            )
 
 
     #======= Get Movies =======
@@ -179,6 +224,19 @@ class ProcImage():
 
             camera.framerate = self.framerate
 
+
+            #----- Read HAAR files -----
+
+            if self.procmode == 3:
+
+                self.cascade_face = cv2.CascadeClassifier(self.cascade_face)
+
+                if self.cascade_face.empty():
+                    self.log.output_msg(1, 1, "Couldn\'t read HAAR file for face recognition")
+                    sys.exit()
+
+
+            #----- Test Image -----
 
             '''
             camera.start_preview()
@@ -290,6 +348,46 @@ class ProcImage():
             self.standby_time = 1
 
         self.log.output_msg(1, 1, "self.standby_time = {0}".format(self.standby_time))
+
+
+        #======= Setup Cascade File (Face) =======
+
+        if os.environ.has_key('NB_CASCADE_FACE'):
+            self.cascade_face = os.environ['NB_CASCADE_FACE']
+        else:
+            self.cascade_face = os.environ['OPENCV_HOME'] + "/data/haarcascades/haarcascade_frontalface_default.xml"
+
+        self.log.output_msg(1, 1, "self.cascade_face = {0}".format(self.cascade_face))
+
+
+        #======= Setup Face Margin X =======
+
+        if os.environ.has_key('NB_FACE_MARGIN_X'):
+            self.face_margin_x = int(os.environ['NB_FACE_MARGIN_X'])
+        else:
+            self.face_margin_x = 15
+
+        self.log.output_msg(1, 1, "self.face_margin_x = {0}".format(self.face_margin_x))
+
+
+        #======= Setup Face Margin Y =======
+
+        if os.environ.has_key('NB_FACE_MARGIN_Y'):
+            self.face_margin_y = int(os.environ['NB_FACE_MARGIN_Y'])
+        else:
+            self.face_margin_y = 30
+
+        self.log.output_msg(1, 1, "self.face_margin_y = {0}".format(self.face_margin_y))
+
+
+        #======= Setup Rectangle Width =======
+
+        if os.environ.has_key('NB_RECT_WIDTH'):
+            self.rect_width = int(os.environ['NB_RECT_WIDTH'])
+        else:
+            self.rect_width = 4
+
+        self.log.output_msg(1, 1, "self.rect_width = {0}".format(self.rect_width))
 
 
         #======= End Message =======
