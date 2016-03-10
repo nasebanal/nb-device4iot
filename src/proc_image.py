@@ -24,15 +24,15 @@ import time
 
 #----- Open CV -----
 
-#import cv2
-#import numpy as np
+import cv2
+import numpy as np
 
 #----- Pi Camera -----
 
 import picamera
-#from picamera import PiCamera
-#import picamera.array
-#from picamera.array import PiRGBArray
+from picamera import PiCamera
+import picamera.array
+from picamera.array import PiRGBArray
 
 #----- NASEBANAL -----
 
@@ -46,6 +46,36 @@ class ProcImage():
     """
     Class to process images
     """
+
+
+    #======= Process Image =======
+
+    def proc_image(self):
+
+        """
+        Function to process image
+        """
+
+        #----- No Processing -----
+
+        if self.procmode == 0:
+
+            self.img_output = self.img_input
+
+
+        #----- Flip Flop -----
+
+        elif self.procmode == 1:
+
+            self.img_output = cv2.flip(self.img_input, flipCode = 0)
+
+
+        #----- Canny -----
+
+        elif self.procmode == 2:
+
+            self.img_output = cv2.Canny(self.img_input, 50, 150)
+
 
     #======= Get Movies =======
 
@@ -150,14 +180,14 @@ class ProcImage():
             camera.framerate = self.framerate
 
 
+            '''
             camera.start_preview()
             time.sleep(self.standby_time)
             camera.stop_preview()
 
             camera.capture(self.output_img)
-
-
             '''
+
             #======= Open WIndow =======
 
             cv2.namedWindow('input')
@@ -172,14 +202,22 @@ class ProcImage():
                 camera.capture(stream, format='bgr')
                 self.img_input = stream.array
 
+
+                #======= Image Processing =======
+
+                self.proc_image()
+
+
                 #======= Display Image =======
 
+                cv2.imwrite(self.output_img, self.img_output)
+
                 cv2.imshow('input', self.img_input)
+                cv2.imshow('output', self.img_output)
 
                 cv2.waitKey(1000)
 
             cv2.destroyAllWindows()
-            '''
 
 
         #======= End Message =======
@@ -222,6 +260,17 @@ class ProcImage():
             self.framerate = 32
 
         self.log.output_msg(1, 1, "self.framerate = {0}".format(self.framerate))
+
+
+        #======= Setup ProcMode =======
+
+        if os.environ.has_key('NB_PROCMODE'):
+            self.procmode = int(os.environ['NB_PROCMODE'])
+        else:
+            self.procmode = 32
+
+        self.log.output_msg(1, 1, "self.procmode = {0}".format(self.procmode))
+
 
 
         #======= Setup Output Image =======
