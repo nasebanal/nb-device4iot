@@ -1,0 +1,15 @@
+#!/bin/bash
+
+#========================================================================
+# FILE NAME:    get_alert.param
+# FUNCTION:     Parameter file for get_alert.py
+# VERSION:      1.0
+# AUTHOR:       S.Yatsuzuka
+#
+# Copyright (C) 2016 NASEBANAL
+#========================================================================
+
+export NB_CMD="python ${NB_HOME}/src/get_alert.py"
+export NB_PROCMODE=3
+export NB_WAITING_TIME=5
+export NB_LED_POS=11
