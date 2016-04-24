@@ -90,7 +90,7 @@ while [ 1 ]
 do
 
     DATE=`date +%Y%m%d%H%M%S`
-    IMAGE_FILE=img_${DATE}.jpg
+    IMAGE_FILE=${DATE}.jpg
     echo "IMAGE_FILE    = ${IMAGE_FILE}"
 
     if [ $# = 1 ]; then
@@ -102,15 +102,28 @@ do
         ${NB_CMD} > ${OUTPUT_FILE}
     fi
 
+
+    #======= Create Meta file =======
+
+    DIRECTORY=${NB_HOME}/temp/${DATE}
+    META_FILE=${DATE}.meta
+
+    mkdir ${DIRECTORY}
+    cp ${NB_OUTPUT_IMG} ${DIRECTORY}/${IMAGE_FILE}
+    touch ${DIRECTORY}/${META_FILE}
+
+
     #======= Transfer image files =======
 
     if [ ${#NB_DEBUG} = 0 ]; then
-        scp -i ${NB_KEY_FILE} ${NB_OUTPUT_IMG} ${NB_REMOTE_USER}@${NB_REMOTE_HOST}:${NB_REMOTE_IMAGE_PATH}/waiting/${IMAGE_FILE}
+        scp -i ${NB_KEY_FILE} -r ${DIRECTORY} ${NB_REMOTE_USER}@${NB_REMOTE_HOST}:${NB_REMOTE_IMAGE_PATH}/waiting/
         scp -i ${NB_KEY_FILE} ${NB_OUTPUT_IMG} ${NB_REMOTE_USER}@${NB_REMOTE_HOST}:${NB_REMOTE_IMAGE_PATH}/
     else
-        scp ${NB_OUTPUT_IMG} ${NB_DEBUG_USER}@${NB_DEBUG_HOST}:${NB_DEBUG_IMAGE_PATH}/waiting/${IMAGE_FILE}
+        scp -r ${DIRECTORY} ${NB_DEBUG_USER}@${NB_DEBUG_HOST}:${NB_DEBUG_IMAGE_PATH}/waiting/
         scp ${NB_OUTPUT_IMG} ${NB_DEBUG_USER}@${NB_DEBUG_HOST}:${NB_DEBUG_IMAGE_PATH}/
     fi
+
+    rm -rf ${DIRECTORY}
 
     if [ ${MODE} -ne "0" ]; then
         echo
